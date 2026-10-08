@@ -9,9 +9,7 @@ public class PlayerHealth : MonoBehaviour
     [SerializeField] private int currentHealth;
     [SerializeField] private HealthBar healthBar;
 
-    private PlayerController controller;
-    private SpriteRenderer sprite;
-    private Color baseColor;
+    private PlayerController playerController;
 
     void Awake()
     {
@@ -23,9 +21,7 @@ public class PlayerHealth : MonoBehaviour
             return;
         }
 
-        controller = GetComponent<PlayerController>();
-        sprite = GetComponentInChildren<SpriteRenderer>();
-        baseColor = sprite.color;
+        playerController = GetComponent<PlayerController>();
     }
 
     void Start()
@@ -47,12 +43,13 @@ public class PlayerHealth : MonoBehaviour
         currentHealth = Mathf.Max(currentHealth - damage, 0);
         healthBar.SetHealth(currentHealth);
 
-        sprite.DOKill();
-        sprite.color = Color.red;
-        sprite.DOColor(baseColor, 0.2f);
-
         if (currentHealth <= 0)
-            controller.Die();
+            playerController.Die();
+
+        else
+            playerController.Hurt();
+
+
     }
 
     void Update()

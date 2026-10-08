@@ -76,6 +76,14 @@ public class PlayerController : MonoBehaviour
         return Physics2D.OverlapCircle(groundCheck.position, groundCheckRadius, groundLayer);
     }
 
+    public void Hurt()
+    {
+        if (isDead) return;
+
+        animator.ResetTrigger("Attack");
+        animator.SetTrigger("Hurt");
+    }
+    
     public void Die()
     {
         isDead = true;
