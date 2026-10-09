@@ -408,6 +408,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::HealthBar
   slider: {fileID: 160332562}
+  fillTime: 0.3
+  flashColor: {r: 1, g: 1, b: 1, a: 1}
 --- !u!1 &277265383
 GameObject:
   m_ObjectHideFlags: 0
