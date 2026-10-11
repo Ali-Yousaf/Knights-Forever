@@ -3,6 +3,7 @@ using UnityEngine;
 public class PlayerController : MonoBehaviour
 {
     public static PlayerController Instance;
+
     [SerializeField] private float moveSpeed = 5f;
     [SerializeField] private float jumpForce = 5f;
     [SerializeField] private float groundCheckRadius = 0.2f;
@@ -11,31 +12,37 @@ public class PlayerController : MonoBehaviour
     [SerializeField] private float runMultiplier = 1.8f;
 
     public bool canMove = true;
+
     private float moveInput;
     private bool jumpPressed;
     private bool isDead;
     private bool isRunning;
     private Rigidbody2D rb;
     private Animator animator;
+    private PlayerAttack playerAttack;
 
-    bool IsBusy => animator.GetCurrentAnimatorStateInfo(0).IsTag("Busy");
+    public bool IsDead => isDead;
+    public bool IsBusy => animator.GetCurrentAnimatorStateInfo(0).IsTag("Busy");
+    public bool IsDefending => Input.GetKey(KeyCode.Q) && IsGrounded();
 
     void Awake()
     {
-        if(Instance == null)
+        if (Instance == null)
             Instance = this;
-
         else
+        {
             Destroy(gameObject);
+            return;
+        }
 
         rb = GetComponent<Rigidbody2D>();
         animator = GetComponent<Animator>();
+        playerAttack = GetComponent<PlayerAttack>();
     }
 
     void Update()
     {
-        if (isDead) return;
-        if (canMove == false) return;
+        if (isDead || !canMove) return;
 
         bool grounded = IsGrounded();
         bool defending = Input.GetKey(KeyCode.Q) && grounded;
@@ -52,10 +59,6 @@ public class PlayerController : MonoBehaviour
         if (moveInput != 0)
             transform.localScale = new Vector3(Mathf.Sign(moveInput), 1, 1);
 
-        if (Input.GetKeyDown(KeyCode.F) && grounded && !defending &&
-            !animator.GetCurrentAnimatorStateInfo(0).IsName("Attack3"))
-            animator.SetTrigger("Attack");
-
         if (Input.GetKeyDown(KeyCode.Space) && !IsBusy)
             jumpPressed = true;
     }
@@ -71,26 +74,35 @@ public class PlayerController : MonoBehaviour
         jumpPressed = false;
     }
 
-    bool IsGrounded()
+    public bool IsGrounded()
     {
         return Physics2D.OverlapCircle(groundCheck.position, groundCheckRadius, groundLayer);
+    }
+
+    public bool IsFacingRight()
+    {
+        return transform.localScale.x > 0;
     }
 
     public void Hurt()
     {
         if (isDead) return;
 
-        animator.ResetTrigger("Attack");
+        playerAttack.CancelAttack();
         animator.SetTrigger("Hurt");
     }
-    
+
     public void Die()
     {
+        if (isDead) return;
+
         isDead = true;
         canMove = false;
         moveInput = 0f;
+        jumpPressed = false;
         rb.linearVelocity = Vector2.zero;
-        
+
+        playerAttack.CancelAttack();
         animator.SetTrigger("Death");
     }
 }
