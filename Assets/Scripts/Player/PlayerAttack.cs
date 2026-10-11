@@ -1,20 +1,28 @@
 using UnityEngine;
 
-[RequireComponent(typeof(PlayerController))]
 public class PlayerAttack : MonoBehaviour
 {
-    private PlayerController playerController;
+    public static PlayerAttack Instance;
+
+    [SerializeField] private int attackDamage = 25;
+    
+
     private Animator animator;
 
     void Awake()
     {
-        playerController = GetComponent<PlayerController>();
+        if(Instance == null)
+            Instance = this;
+
+        else
+            Destroy(gameObject);
+
         animator = GetComponent<Animator>();
     }
 
     void Update()
     {
-        if (playerController.IsDead || !playerController.canMove)
+        if (PlayerController.Instance.IsDead || !PlayerController.Instance.canMove)
             return;
 
         if (Input.GetKeyDown(KeyCode.F))
@@ -23,8 +31,8 @@ public class PlayerAttack : MonoBehaviour
 
     private void TryAttack()
     {
-        if (!playerController.IsGrounded()) return;
-        if (playerController.IsDefending) return;
+        if (!PlayerController.Instance.IsGrounded()) return;
+        if (PlayerController.Instance.IsDefending) return;
         if (animator.GetCurrentAnimatorStateInfo(0).IsName("Attack3")) return;
 
         animator.SetTrigger("Attack");
