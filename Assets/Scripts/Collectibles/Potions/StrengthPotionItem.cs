@@ -1,16 +1,32 @@
+using System.Collections;
 using UnityEngine;
 
-public class StrengthPotionItem : MonoBehaviour
+public class StrengthPotionItem : PickupItem
 {
-    // Start is called once before the first execution of Update after the MonoBehaviour is created
-    void Start()
+    [SerializeField] private int damageMultiplier = 2;
+    [SerializeField] private float strengthDuration = 5f;
+
+    private Coroutine strengthCoroutine;
+
+    protected override bool OnCollect(GameObject collector)
     {
-        
+        if (strengthCoroutine != null)
+            StopCoroutine(strengthCoroutine);
+
+        strengthCoroutine = StartCoroutine(StrengthDurationRoutine());
+
+        return true;
     }
 
-    // Update is called once per frame
-    void Update()
+    private IEnumerator StrengthDurationRoutine()
     {
-        
+        int baseDamage = PlayerAttack.Instance.attackDamage;
+
+        PlayerAttack.Instance.attackDamage *= damageMultiplier;
+
+        yield return new WaitForSeconds(strengthDuration);
+
+        PlayerAttack.Instance.attackDamage = baseDamage;
+        strengthCoroutine = null;
     }
 }

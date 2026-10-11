@@ -3,9 +3,7 @@ using UnityEngine;
 public class PlayerAttack : MonoBehaviour
 {
     public static PlayerAttack Instance;
-
-    [SerializeField] private int attackDamage = 25;
-    
+    public int attackDamage = 25;
 
     private Animator animator;
 
