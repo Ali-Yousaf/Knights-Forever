@@ -48,8 +48,14 @@ public class PlayerHealth : MonoBehaviour
 
         else
             playerController.Hurt();
+    }
 
-
+    public bool Heal(int amount)
+    {
+        if (currentHealth >= maxHealth) return false;
+        currentHealth = Mathf.Min(currentHealth + amount, maxHealth);
+        healthBar.SetHealth(currentHealth);
+        return true;
     }
 
     void Update()
