@@ -6,11 +6,7 @@ public class ShieldPotionItem : PickupItem
 
     protected override bool OnCollect(GameObject collector)
     {
-        if (collector.GetComponent<PlayerController>() == null)
-            return false;
-
-        PlayerController.Instance.ActivateShield(shieldDuration);
-
+        PlayerPotionManager.Instance.ActivateShield(shieldDuration);
         return true;
     }
 }

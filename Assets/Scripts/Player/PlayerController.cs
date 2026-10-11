@@ -1,4 +1,3 @@
-using System.Collections;
 using UnityEngine;
 
 public class PlayerController : MonoBehaviour
@@ -11,7 +10,6 @@ public class PlayerController : MonoBehaviour
     [SerializeField] private Transform groundCheck;
     [SerializeField] private LayerMask groundLayer;
     [SerializeField] private float runMultiplier = 1.8f;
-    [SerializeField] private GameObject shieldObject;
 
     public bool canMove = true;
 
@@ -22,7 +20,6 @@ public class PlayerController : MonoBehaviour
     private Rigidbody2D rb;
     private Animator animator;
     private PlayerAttack playerAttack;
-    private Coroutine shieldCoroutine;
 
     public bool IsDead => isDead;
     public bool IsBusy => animator.GetCurrentAnimatorStateInfo(0).IsTag("Busy");
@@ -32,14 +29,15 @@ public class PlayerController : MonoBehaviour
     {
         if (Instance == null)
             Instance = this;
-        
         else
+        {
             Destroy(gameObject);
+            return;
+        }
 
         rb = GetComponent<Rigidbody2D>();
         animator = GetComponent<Animator>();
         playerAttack = GetComponent<PlayerAttack>();
-        shieldObject.SetActive(false);
     }
 
     void Update()
@@ -106,24 +104,5 @@ public class PlayerController : MonoBehaviour
 
         playerAttack.CancelAttack();
         animator.SetTrigger("Death");
-    }
-
-
-    public void ActivateShield(float duration)
-    {
-        if (shieldCoroutine != null)
-            StopCoroutine(shieldCoroutine);
-
-        shieldCoroutine = StartCoroutine(ShieldRoutine(duration));
-    }
-
-    private IEnumerator ShieldRoutine(float duration)
-    {
-        shieldObject.SetActive(true);
-
-        yield return new WaitForSeconds(duration);
-
-        shieldObject.SetActive(false);
-        shieldCoroutine = null;
     }
 }
